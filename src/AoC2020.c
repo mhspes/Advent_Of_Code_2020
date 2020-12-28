@@ -25,7 +25,8 @@ extern void aoc5(void);
 extern void aoc6(void);
 extern void aoc7(void);
 extern void aoc8(void);
-
+extern void aoc21(void);
+extern void aoc22(void);
 
 int main(void) {
 
@@ -35,6 +36,8 @@ int main(void) {
 	//aoc4();
 	//aoc5();
 	//aoc6();
-	aoc8();
+	//aoc8();
+	//aoc21();
+	aoc22();
 	return EXIT_SUCCESS;
 }

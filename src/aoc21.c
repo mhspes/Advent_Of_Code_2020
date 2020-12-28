@@ -16,19 +16,18 @@ typedef struct{
 	uint8_t ingredients[ING_MAX];
 } allergen;
 
-static void add_ingr(allergen * al, uint8_t val[ING_MAX])
+static void add_ingr(void * dest, void * src)
 {
-	int i;
-	for(i = 0; i < ING_MAX; i++)
-		al->ingredients[i] += val[i];
+    int i;
+    for(i = 0; i < ING_MAX; i++)
+        *((uint8_t*)dest+i) += *((uint8_t*)src+i);
 }
-
 
 void aoc21()
 {
     char c, temp[10];
-    int i, sum;
-    uint8_t ind_num[ING_MAX];
+    int i, j, sum;
+    uint8_t ind_num_temp[ING_MAX], ind_num[ING_MAX];
     allergen al[AL_MAX];
     char keywords[ING_MAX][10];
 
@@ -37,32 +36,32 @@ void aoc21()
         printf("File not found.\n");
         exit(0);
     }
+
     memset(al, 0, sizeof(allergen)*AL_MAX);
     memset(keywords, 0, sizeof(keywords));
     memset(ind_num, 0, sizeof(ind_num));
+    memset(ind_num_temp, 0, sizeof(ind_num_temp));
 
     i = sum = 0;
-    // Find the number of keywords (ingredients) and accumulate to a allergen data struct
-
+    // Find the number of keywords (ingredients) and fill the list of allergens & ingredients
     while(EOF != (c = getc(fp)))
     {
     	if(' ' == c){
     		// Ingredient read
-    		// check if not listed --> add
+    		// Add, check if not listed
     		temp[i] = '\0';
     		i=0;
     		while(i < ING_MAX)
     		{
     			if(!strcmp(keywords[i], temp))
     			{
-    				ind_num[i]++;
-    				i++;
+    				ind_num_temp[i]++;
     				break;
     			}
     			if(keywords[i][0] == 0)
     			{
-    				strcpy(keywords[i], temp); // Add to the list
-    				ind_num[i]++;
+    				strcpy(keywords[i], temp); // Not listed, add
+    				ind_num_temp[i]++;
     				break;
     			}
     			i++;
@@ -75,28 +74,28 @@ void aoc21()
     	else if('(' == c){
     		// All ingredients read, process allergens
     		i = 0;
-    		while(' ' != (c = getc(fp)));
+    		while(' ' != (c = getc(fp))); // Skip nonnecessary
     		while('\n' != (c = getc(fp)))
     		{
-    			if(',' == c || ')' == c){
-    				// allergen read
+    			if(',' == c || ')' == c)
+    			{
+    				// An allergen read
     				temp[i] = '\0';
     				i = 0;
     				while(i <= AL_MAX)
     				{
     					if(i == AL_MAX - 1){
-    						printf("Buffer too small!\n");
-    						exit(0);
+    						exit(0); // Something's wrong..
     					}
     					if(!strcmp(al[i].name, temp))
     					{
-    						add_ingr(&al[i], ind_num);
+    						add_ingr(&al[i].ingredients, ind_num_temp);
     						al[i].num++;
     						break;
     					}
     					if(al[i].name[0] == 0){
-    						strcpy(&al[i].name[0], temp);
-    						add_ingr(&al[i], ind_num);
+    						strcpy(&al[i].name[0], temp); // New allergen, add to list
+    						add_ingr(&al[i].ingredients, ind_num_temp);
     						al[i].num++;
     						break;
     					}
@@ -109,73 +108,35 @@ void aoc21()
     			temp[i++] = c;
     			}
     		}
-    		memset(ind_num, 0, sizeof(ind_num));
+    		// Single line processed, set buffers..
+    		add_ingr(ind_num, ind_num_temp);
+    		memset(ind_num_temp, 0, sizeof(ind_num_temp));
     	}
     	else {
     		temp[i++] = c;
     	}
     }
-    // Iterate 2
-    int j, k;
-    int len1;
-    len1 = 0;
-    int wrong_ind[AL_MAX];
-    memset(wrong_ind, 0, AL_MAX*sizeof(int));
-    for(j = 0 ; j < AL_MAX; j++){
-    	if('\0' != al[j].name[0]){
-    		printf("For: %s \n", al[j].name);
-    		for(i = 0; i < ING_MAX ; i++)
+
+    // Print possible ingredients, remove from list of total sum
+    for(j = 0 ; j < AL_MAX; j++)
+    {
+    	if('\0' != al[j].name[0])
+    	{
+    		printf("For %s:\n", al[j].name);
+    		for(i = 0; i < ING_MAX; i++)
     		{
     			if(al[j].num == al[j].ingredients[i] )
-    				{
-    				printf("Ing: %s, removing \n", keywords[i]);
-    				for(k=0; k < AL_MAX; k++){
-    					if(wrong_ind[k]==i){
-    						wrong_ind[j] = i;
-    					}
-    				}
-    				// Check if not listed alrdy..
-    				len1++;
-    				}
-    		}
-    		}
-
-    	printf("\n");
-    }
-    sum=0;
-    // Remove allergen
-    for(j = 0; j < len1; j++){
-    	memset(keywords[wrong_ind[j]],0, 10);
-    }
-
-    // Read input again now ignoring the allergens..
-    while(EOF != (c = getc(fp)))
-    {
-    	if(' ' == c){
-    		// Ingredient read
-    		// check if not listed --> add
-    		temp[i] = '\0';
-    		i=0;
-    		while(i < ING_MAX)
-    		{
-    			if(!strcmp(keywords[i], temp))
     			{
-    				sum++;
-    				break;
+    				printf("%s ", keywords[i]);
+    				ind_num[i] = 0;
     			}
-    			i++;
     		}
-    		i=0;
+    		printf("\n");
     	}
-    	else if('(' == c){
-    		while('\n' != (c = getc(fp)));
-    		// Ignore rest (allergens)
-    	} else {
-    		temp[i++] = c;
-    	}
-
     }
+    // Compute & print sum
+    for(j = 0; j < ING_MAX; j++)
+        sum += ind_num[j];
 
-    printf("SUM: %d\n", sum);
-
+    printf("Sum: %d\n", sum);
 }
