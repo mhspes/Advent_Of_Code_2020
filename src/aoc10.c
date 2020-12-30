@@ -36,15 +36,13 @@ void aoc10(void)
         exit(0);
     }
 
-    len = 0;
-    arr[len++]=0;
+    arr[0]=0;
+    len = 1;
 
     while(EOF != fscanf(fp, "%d", arr+len++));
     fclose(fp);
 
-    bubblesort(arr, len);
-
-    len++;
+    bubblesort(arr, len-1);
     arr[len-1] = arr[len-2]+3; // The last value
 
     // Iterate the list, compute the amount of arrangments + accumulate
@@ -71,7 +69,6 @@ void aoc10(void)
         }
 
     }
-
-    printf("Arrangments: %llu \n"arr2[len-1]);
+    printf("Arrangments: %llu \n", arr2[len-1]);
 
 }
