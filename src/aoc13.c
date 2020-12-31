@@ -74,5 +74,5 @@ void part1()
 void aoc13(){
 
 	part1();
-	//part2();
+	part2();
 }
