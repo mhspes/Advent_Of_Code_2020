@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <math.h>
 
-FILE * fp;
+static char fname[] = "inputs/aoc12.txt";
+static FILE * fp;
+
 
 typedef struct {
     int x; int y;
@@ -46,6 +48,7 @@ void rotate(char c, int n, dir * wp)
     }
 }
 
+// Move (directly or according to waypoint) (task1)
 void add_1(char c, int n, setup * stp)
 {
     if(c == 'F')
@@ -75,7 +78,7 @@ void add_1(char c, int n, setup * stp)
     }
 }
 
-
+// Adjust waypoint or move (task2)
 void add_2(char c, int n, setup * stp)
 {
     if(c == 'F')
@@ -105,7 +108,8 @@ void add_2(char c, int n, setup * stp)
     }
 }
 
-void task1(){
+static void task1()
+{
 
     setup stp;
     char c;
@@ -118,21 +122,21 @@ void task1(){
     while(EOF != fscanf(fp, "%c%d\n", &c, &n))
     {
         if ('L' == c || 'R' == c)
-        {
         	rotate(c, n, &stp.wp);
-        } else if('F' == c) {
+        else if('F' == c)
         	add_1(c, n, &stp);
-        } else {
+        else
         	add_1(c, n, &stp);
-        }
     }
+
     n = abs(stp.x)+abs(stp.y);
     printf("Task 1: %d\n", n);
 
 
 }
 
-void task2(){
+static void task2()
+{
 
     setup stp;
     char c;
@@ -145,13 +149,11 @@ void task2(){
     while(EOF != fscanf(fp, "%c%d\n", &c, &n))
     {
         if ('L' == c || 'R' == c)
-        {
-            rotate(c, n, &stp.wp);
-        } else if('F' == c) {
+        	rotate(c, n, &stp.wp);
+        else if('F' == c)
         	add_2(c, n, &stp);
-        } else {
+        else
         	add_2(c, n, &stp);
-        }
     }
 
     n = abs(stp.x)+abs(stp.y);
@@ -159,14 +161,13 @@ void task2(){
 
 }
 
-// Task 2
-void aoc12(void)
+void aoc12()
 {
-    if(NULL == ( fp = fopen("inputs/aoc12.txt", "r")))
-       {
-           printf("File not found..\n");
-           exit(0);
-       }
+    if(NULL == ( fp = fopen(fname, "r")))
+    {
+    	perror(fname);
+    	exit(0);
+    }
 
     task1();
     rewind(fp);

@@ -19,7 +19,7 @@ void gcdExtended(long long int a, long long int b, long long int *x, long long i
     }
 
     long long int x1, y1;
-    gcdExtended(b%a, a, &x1, &y1);
+    gcdExtended(b % a, a, &x1, &y1);
     *x = y1 - (b/a) * x1;
     *y = x1;
 
@@ -28,7 +28,7 @@ void gcdExtended(long long int a, long long int b, long long int *x, long long i
 
 /* For part 2 - straight-forward usage of Chinese-Remainder-Theorem
  */
-void part2()
+static void part2()
 {
 	int i;
 	long long int n_i[9], inv_n_i[9];
@@ -54,7 +54,7 @@ void part2()
 	printf("Part2: %I64d\n", res);
 }
 
-void part1()
+static void part1()
 {
 	int min, temp, i, ind;
 	min = dpt;

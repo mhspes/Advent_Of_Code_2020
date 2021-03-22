@@ -1,37 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
-FILE *fp;
+
+static char fname[] = "inputs/aoc1.txt";
+static FILE * fp;
 
 #define BUF_LEN_MAX 256
-/*  DAY 1  */
-// Find numbers x y z from input such that x+y+z=2020
-void aoc1(void)
+
+int aoc[BUF_LEN_MAX];
+int data_len;
+
+// Task 2/2
+static void task2()
 {
+	int i, j, k, n1, n2, n3;
 
-	int i, j, k, c, n1, n2, n3;
-	int aoc[BUF_LEN_MAX];
-
-	if (NULL == (fp = fopen("inputs/aoc1.txt","r")))
-	{
-		printf("File not found..\n");
-		exit(0);
-	}
-
-	c = 0;
 	n1 = n2 = n3 = 0;
 
-	// Read input to buffer
-	while(EOF != fscanf(fp, "%d", aoc + c) && c++ < BUF_LEN_MAX);
-
-	fclose(fp);
-
-	for(i = 0; i < c ; i++)
+	for(i = 0; i < data_len ; i++)
 	{
-		for(j = i ; j < c ; j++)
+		for(j = i ; j < data_len ; j++)
 		{
-			for(k = j; k < c ; k++)
+			for(k = j; k < data_len ; k++)
 			{
 				if(2020 == aoc[k] + aoc[i] + aoc[j])
 				{
@@ -45,6 +35,49 @@ void aoc1(void)
 	}
 
 end:
-	if(n1 && n2 && n3) printf("Numbers: (%d,%d,%d), product: %d ", n1,n2,n3, n1*n2*n3);
-	else printf("No numbers found..");
+	if(n1 && n2 && n3) printf("Numbers: (%d,%d,%d), product: %d\n", n1,n2,n3, n1*n2*n3);
+}
+
+// Task 1/2
+static void task1()
+{
+	int i, j, n1, n2;
+
+	n1 = n2 = 0;
+
+	for(i = 0; i < data_len ; i++)
+	{
+		for(j = i ; j < data_len ; j++)
+		{
+			if(2020 == aoc[i] + aoc[j])
+			{
+				n1 = aoc[i];
+				n2 = aoc[j];
+				goto end;
+			}
+		}
+	}
+
+end:
+	if(n1 && n2) printf("Numbers: (%d,%d), product: %d\n", n1,n2, n1*n2);
+}
+
+void aoc1()
+{
+
+	data_len = 0;
+
+	if (NULL == (fp = fopen(fname, "r")))
+	{
+		printf("File not found..\n");
+		exit(0);
+	}
+
+	// Read the input to buffer
+	while(EOF != fscanf(fp, "%d", aoc + data_len) && data_len++ < BUF_LEN_MAX);
+	fclose(fp);
+
+	task1();
+	task2();
+
 }

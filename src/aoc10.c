@@ -2,48 +2,23 @@
 #include <stdio.h>
 #include <string.h>
 
-FILE * fp;
+static char fname[] = "inputs/aoc10.txt";
+static FILE * fp;
 
-// For sorting the integer sequence
-static void bubblesort(int * arr, int n)
+int arr[200];
+long long int arr2[200]; // Amount of arrangements till the i:th charger
+int len;
+
+static int compare(void const *a, void const *b)
 {
-    int i, j, temp;
-    for (i = 0; i < n-1; i++){
-        for (j = 0; j < n-i-1; j++){
-            if (*(arr+j) > *(arr+j+1))
-            {
-                temp = *(arr+j+1);
-                *(arr+j+1) = *(arr+j);
-                *(arr+j) = temp;
-            }
-        }
-    }
+	return *(int*)a - *(int*)b;
 }
 
-void aoc10(void)
+// Task 2/2
+static void task2(void)
 {
-
-    int i, len, arr[200];
-    unsigned long long arr2[200]; // List for amount of the arrangments
-
-    memset(arr, 0, 200*sizeof(int));
-    memset(arr2, 0, 200*sizeof(unsigned long long));
+    int i;
     arr2[0] = 1;
-
-    if(NULL == ( fp = fopen("inputs/aoc10.txt", "r")))
-    {
-        printf("File not found..\n");
-        exit(0);
-    }
-
-    arr[0]=0;
-    len = 1;
-
-    while(EOF != fscanf(fp, "%d", arr+len++));
-    fclose(fp);
-
-    bubblesort(arr, len-1);
-    arr[len-1] = arr[len-2]+3; // The last value
 
     // Iterate the list, compute the amount of arrangments + accumulate
     for(i = 0; i <= len; i++)
@@ -69,6 +44,46 @@ void aoc10(void)
         }
 
     }
-    printf("Arrangments: %llu \n", arr2[len-1]);
+    printf("Arrangments: %I64d \n", arr2[len-1]);
 
+}
+
+// Task 1/2
+static void task1(void)
+{
+	int i, n1, n3;
+    arr[0]= n1 = n3 = 0;
+    len = 1;
+
+    while(EOF != fscanf(fp, "%d", arr+len++));
+    fclose(fp);
+
+    // Sort by the voltages
+    qsort(arr, len-1, sizeof(int), compare);
+    arr[len-1] = arr[len-2]+3; // The last value
+
+    // Count the amount of diffs.
+    for(i = 1; i < len; i++)
+    {
+    	if(arr[i] - arr[i-1] == 1) n1++;
+    	else if (arr[i] - arr[i-1] == 3) n3++;
+    }
+
+    printf("%d\n", n1*n3);
+
+}
+
+void aoc10()
+{
+    memset(arr, 0, 200*sizeof(int));
+    memset(arr2, 0, 200*sizeof(long long int));
+
+    if(NULL == ( fp = fopen(fname, "r")))
+    {
+        printf("File not found..\n");
+        exit(0);
+    }
+
+	task1();
+	task2();
 }

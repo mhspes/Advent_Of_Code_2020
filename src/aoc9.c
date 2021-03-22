@@ -2,7 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 
-FILE * fp;
+static char fname[] = "inputs/aoc9.txt";
+static FILE * fp;
+
+unsigned long list[1000];
+unsigned long  * ptr;
 
 // Validate the by finding a+b=number from 25 previous val's in the list
 // ret 1 for valid and 0 for invalid number
@@ -16,40 +20,16 @@ static int validate(unsigned long * test_val, unsigned long * list)
     return 0;
 }
 
-void aoc9(void){
+// Task 2/2
+static void task2()
+{
 
-    unsigned long list[1000];
-    unsigned long  * ptr;
     int a, b, ind;
     unsigned long temp_sum, min, max;
-    ptr = &list[0];
-    a = 1;
+
     temp_sum = ind = 0;
-    memset(list, 0, 1000*sizeof(unsigned long));
 
-    if(NULL == ( fp = fopen("inputs/aoc9.txt", "r")))
-    {
-        printf("File not found..\n");
-        exit(0);
-    }
-
-    // Read the preamble
-    while(ptr != &list[25])
-        fscanf(fp, "%lu", ptr++);
-
-    while(EOF != fscanf(fp, "%lu", ptr))
-    {
-        a = validate(ptr, ptr-25);
-        if(!a)
-        {
-            printf("Invalid number: %lu\n", *ptr);
-            break;
-        }
-        ptr++;
-    }
-    fclose(fp);
-
-    // Find (ind) sequential numbers summing to the invalid number
+    // Find ind sequential numbers summing to the invalid number
     for(a=0; list+a < ptr; a++)
     {
         while(temp_sum <= *ptr)
@@ -61,7 +41,7 @@ void aoc9(void){
         ind = temp_sum = 0;
     }
 
-    // Find the min, max of the list, compute sum
+    // Find the min & max of the list, compute the sum
 end:
     min = *ptr;
     max = b = 0;
@@ -71,6 +51,47 @@ end:
         b++;
     }
 
-printf("Max: %lu, min: %lu, sum: %lu \n", max, min, max+min);
+printf("Sum: %lu \n", max+min);
 
+}
+
+// Task 1/2
+static void task1()
+{
+	int a;
+    ptr = &list[0];
+
+    memset(list, 0, 1000*sizeof(unsigned long));
+
+    if(NULL == ( fp = fopen(fname, "r")))
+    {
+        printf("File not found..\n");
+        exit(0);
+    }
+
+    // Read the preamble
+    while(ptr != &list[25])
+        fscanf(fp, "%lu", ptr++);
+
+    // Scan + validate
+    while(EOF != fscanf(fp, "%lu", ptr))
+    {
+        a = validate(ptr, ptr-25);
+        if(!a)
+        {
+            printf("Invalid number: %lu\n", *ptr);
+            break;
+        }
+        ptr++;
+    }
+
+    fclose(fp);
+
+}
+
+void aoc9()
+{
+
+	task1();
+	task2();
 }

@@ -2,14 +2,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-FILE * fp;
+static char fname[] = "inputs/aoc11.txt";
+static FILE * fp;
 
 char seats_1[100][100]; // Seating before & after the change
 char seats_2[100][100];
 
 // Check amout of occupied/free seats next to
 // Return 0 if amount exceeded, 1 otherwise
-int check(char (*ptr)[100], int x, int y, char c, int amount){
+int check(char (*ptr)[100], int x, int y, char c, int amount)
+{
 
     int i,j, val;
     val = 0;
@@ -26,12 +28,14 @@ int check(char (*ptr)[100], int x, int y, char c, int amount){
     return 1;
 }
 
-void aoc11(void){
+// Task 1/2
+static void task1()
+{
 
     char c;
     int i, j, flag, counter;
 
-    if(NULL == ( fp = fopen("inputs/aoc11.txt", "r")))
+    if(NULL == ( fp = fopen(fname, "r")))
     {
         printf("File not found..\n");
         exit(0);
@@ -89,4 +93,8 @@ counter = 0;
 
 printf("Occupied seats: %d", counter);
 
+}
+void aoc11()
+{
+	task1();
 }

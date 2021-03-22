@@ -1,44 +1,53 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-FILE *fp;
+static char fname[] = "inputs/aoc5.txt";
+static FILE *fp;
 
-/*  DAY 5  */
-//Bubblesort for array
-void bubblesort(int * arr, int n)
+
+#define MAX_SIZE 900
+
+static int seats[MAX_SIZE];
+static int len;
+
+// Compare func for qsort
+static int compare(void const *a, void const *b)
 {
-    int i, j, temp;
-    for (i = 0; i < n-1; i++){
-        for (j = 0; j < n-i-1; j++){
-            if (*(arr+j)>*(arr+j+1))
-            {
-                temp = *(arr+j+1);
-                *(arr+j+1) = *(arr+j);
-                *(arr+j) = temp;
-            }
-        }
-    }
+	return *(int*)a - *(int*)b;
 }
 
-/*  DAY 5  */
-// Find the seat ID's of boarding passes
-void aoc5()
+// Task 2/2
+static void task2()
+{
+    // Sort input & process by finding diff. of 2
+    qsort(seats, MAX_SIZE, sizeof(int), compare);
+
+    for(; 0 < len; len--)
+        if(seats[len]-seats[len-1]==2)
+        {
+            printf("Seat: %d\n", seats[len]-1);
+            return;
+        }
+}
+
+// Task 1/2
+// Binary search -kind of algorithm
+static void task1()
 {
     char c;
     int row, col;
-    int temp1, temp2, max, count;
-    int res[900];
+    int temp1, temp2, max;
     row = col = 0;
     temp1 = 128;
     temp2 = 8;
-    max= count = 0;
+    max = len = 0;
 
-    if(NULL == ( fp = fopen("inputs/aoc5.txt", "r")))
+    if(NULL == ( fp = fopen(fname, "r")))
     {
-        printf("File not found.\n");
+        printf("File not found..\n");
         exit(0);
     }
-    // Read file input
+
     while(EOF != (c = fgetc(fp))){
         if(c == 'B'){
             temp1 >>= 1;
@@ -52,22 +61,21 @@ void aoc5()
             temp2 >>= 1;
         } else if (c == '\n'){
             temp1 = row*8+col;
-            res[count++]= temp1;
+            seats[len++]= temp1;
             if(max < temp1) max = temp1;
             row = col = 0;
             temp1 = 128;
             temp2 = 8;
         }
     }
-    // Sort & process
-    bubblesort(res, count);
-    for(; 0 < count; count--)
-    {
-        if(res[count]-res[count-1]==2)
-        {
-            temp1 = res[count]-1;
-            printf("Seat: %d\n", temp1);
-        }
-    }
-    printf("LARGEST: %d\n", max);
+
+    fclose(fp);
+
+    printf("Largest seat ID: %d\n", max);
+}
+
+void aoc5()
+{
+	task1();
+	task2();
 }

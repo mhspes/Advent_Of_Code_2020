@@ -2,69 +2,129 @@
 #include <stdlib.h>
 #include <string.h>
 
-FILE *fp;
+static char fname[] = "inputs/aoc6.txt";
+static FILE *fp;
 
-/*  DAY 6  */
 
-int numberofbits(int num){
-	int i,ret;
+// Return number of bits of an integer
+int numberofbits(unsigned int num)
+{
+	int i, ret;
 	ret = 0;
-	for(i=0; i < 26; i++){
+	for(i = 0; i < 26; i++){
 		ret += num & 1;
 		num >>= 1;
 	}
 	return ret;
 }
 
-void aoc6(){
+// Task 2/2
+// Use bit mapping for encountered letters
+// Cumulatively AND to indicate incidence on all lines
+static void task2()
+{
     char c, c_prev;
-    int bool_c[10],i , temp, sum, temp_bool;
+    int bool_c[10], i, sum, temp_bool;
+
+    memset(bool_c, 0, 10*sizeof(int));
     sum = i = 0;
-    memset(bool_c, 0, 10*4);
-    if(NULL == ( fp = fopen("inputs/aoc6.txt", "r")))
-    {
-        printf("File not found..\n");
-        exit(0);
-    }
     c_prev = ' ';
+
     while(1)
     {
     	c = fgetc(fp);
+
     	if(c != EOF && c != '\n')
     	{
-    		temp = 1 << (c - 'a');
-    		if(!(bool_c[i] & temp)) bool_c[i] += temp;
+    		// Bit flagging for encountered letters ( 0..26)
+    		temp_bool = 1 << (c - 'a');
+    		if(!(bool_c[i] & temp_bool)) bool_c[i] += temp_bool;
     		c_prev = c;
     	}
     	else if (c == '\n')
         {
     		i++;
-            if(c_prev =='\n'){
+            if(c_prev =='\n')
+            {
             	i -=2;
             	temp_bool = bool_c[i];
             	for(; 0 < i; i--)
             	{
-            		bool_c[i] = 0;
-            		temp_bool = temp_bool & bool_c[i-1];
+            		bool_c[i] = 0; // Clear used indicators
+            		temp_bool = temp_bool & bool_c[i-1]; // Cumulative AND
             	}
             	bool_c[0] = 0;
-            	temp = numberofbits(temp_bool);
-            	sum += temp;
+            	// temp_bool = bits i.e. letters found in each line of a set
+            	sum += numberofbits((unsigned int)temp_bool);
             	i = 0;
             }
             c_prev = c;
         }
     	else if (EOF == c)
     	{
+    		// Process last set
     		i-=2;
     		temp_bool = bool_c[i];
     		for(; 0 < i; i--)
     			temp_bool = temp_bool & bool_c[i-1];
-    		temp = numberofbits(temp_bool);
-        	sum += temp;
+    		sum += numberofbits((unsigned int)temp_bool);
         	break;
         }
     }
-    printf("Sum: %d\n",sum);
+    printf("Task 2 sum: %d\n", sum);
 
+}
+
+// Task 1/2
+static void task1()
+{
+    char c, c_prev;
+    int bool_c, temp, sum;
+
+    sum = bool_c = 0;
+    c_prev = ' ';
+
+    while(1)
+    {
+    	c = fgetc(fp);
+
+    	if(c != EOF && c != '\n')
+    	{
+    		// Bit flagging for encountered letters ( 0..26)
+    		temp = 1 << (c - 'a');
+    		if(!(bool_c & temp)) bool_c += temp;
+    		c_prev = c;
+    	}
+    	else if (c == '\n')
+        {
+    		if(c_prev =='\n')
+    		{
+    			sum += numberofbits((unsigned int)bool_c);
+    			bool_c = 0;
+    		}
+    		c_prev = c;
+        }
+    	else if (EOF == c)
+    	{
+    		sum += numberofbits((unsigned int)bool_c);
+        	break;
+        }
+    }
+    printf("Task 1 sum: %d\n", sum);
+
+}
+
+void aoc6()
+{
+    if(NULL == ( fp = fopen(fname, "r")))
+    {
+        printf("File not found..\n");
+        exit(0);
+    }
+
+	task1();
+
+	rewind(fp);
+
+	task2();
 }

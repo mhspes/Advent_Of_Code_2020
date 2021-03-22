@@ -1,9 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-FILE *fp;
+static char fname[] = "inputs/aoc3.txt";
+static FILE * fp;
 
-/*  DAY 3  */
+
 // Find amount of encountered trees (#'s)
 int aoc3_routine(int x, int y, char (*arg)[31])
 {
@@ -21,16 +22,36 @@ int aoc3_routine(int x, int y, char (*arg)[31])
 	return count;
 }
 
+// Task 2/2
+static void task2(char (*map)[31])
+{
+	unsigned int res = 1;
+	res *= aoc3_routine(1, 1, map);
+	res *= aoc3_routine(3, 1, map);
+	res *= aoc3_routine(5, 1, map);
+	res *= aoc3_routine(7, 1, map);
+	res *= aoc3_routine(1, 2, map);
+
+	printf("Task 2: %u\n", res);
+
+}
+
+// Task 1/2
+static void task1(char (*map)[31])
+{
+	unsigned int res;
+	res = aoc3_routine(3, 1, map);
+	printf("Task 1: %u\n", res);
+}
+
 void aoc3(void)
 {
 	int i,j;
-	unsigned long prod;
 	char tempc;
 	char map[323][31];
 	i = j = 0;
-	prod = 1;
 
-	if (NULL == (fp = fopen("inputs/aoc3.txt", "r")))
+	if (NULL == (fp = fopen(fname, "r")))
 	{
 		printf("File not found..\n");
 		exit(0);
@@ -47,11 +68,8 @@ void aoc3(void)
 		j++;
 	}
 	fclose(fp);
-	prod *= aoc3_routine(1, 1, map);
-	prod *= aoc3_routine(3, 1, map);
-	prod *= aoc3_routine(5, 1, map);
-	prod *= aoc3_routine(7, 1, map);
-	prod *= aoc3_routine(1, 2, map);
 
-	printf("Product of #:s of trees: %lu\n", prod);
+	task1(map);
+	task2(map);
+
 }
