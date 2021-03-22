@@ -1,6 +1,6 @@
 # Advent_of_Code_2020
 
-Efforts for https://adventofcode.com/2020
+My efforts for https://adventofcode.com/2020
 
 Didn't complete all of them, just (16 + ½ + ½) / 25
 
